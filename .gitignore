@@ -3,5 +3,6 @@ data.ms
 .env
 *.exe
 
-#folder ini berisi gambar yang telah di upload
+# How to 
 public/*
+build/
