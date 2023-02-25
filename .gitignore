@@ -1,0 +1,7 @@
+db-data
+data.ms
+.env
+*.exe
+
+#folder ini berisi gambar yang telah di upload
+public/*

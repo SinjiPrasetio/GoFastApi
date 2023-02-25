@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  #  start MariaDB, and ensure that data is stored to a mounted volume
+  mariadb:
+    image: 'mariadb:10.6'
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASS:-password}
+      MYSQL_DATABASE: ${DATABASE_NAME:-gofastapi}
+      MYSQL_USER: ${DATABASE_NAME:-gofastapi}
+      MYSQL_PASSWORD: ${DATABASE_PASS:-password}
+
+    volumes:
+      - ./db-data/mariadb:/docker-entrypoint-initdb.d
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    environment:
+      PMA_HOST: mariadb
+      PMA_USER: root
+      PMA_PASSWORD: ${DATABASE_NAME:-password}
+    ports:
+      - "8090:80"
+
+  meilisearch:
+    container_name: meilisearch
+    image: getmeili/meilisearch:v0.29
+    environment:
+      - http_proxy
+      - https_proxy
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterKey}
+      - MEILI_NO_ANALYTICS=${MEILI_NO_ANALYTICS:-true}
+      - MEILI_ENV=${MEILI_ENV:-development}
+      - MEILI_LOG_LEVEL
+      - MEILI_DB_PATH=${MEILI_DB_PATH:-/data.ms}
+    ports:
+      - ${MEILI_PORT:-7700}:7700
+    # networks:
+    #   - meilisearch
+    volumes:
+      - ./data.ms:/data.ms
+    restart: unless-stopped
+
+# networks:
+#   meilisearch:
+#     driver: bridge
